@@ -1,0 +1,214 @@
+######################################################
+### Python package description / metadata
+
+[project]
+name = "{{ cookiecutter.python_project_slug }}"
+dependencies = [
+    "numpy>=1.26.2,<2",
+    "SciPy>=1.11.4,<2",
+    "scikit-learn>=1.3.2,<2",
+]
+version = "0.0.1"
+
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Intended Audience :: Science/Research",
+    "Private :: Do Not Upload",                                   # Remove when trying to upload
+    "License :: OSI Approved :: MIT License",                     # Example of an OSS license
+]
+readme = "Readme.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "{{ cookiecutter.author }}", email = "{{ cookiecutter.email }}" },
+]
+
+{% if cookiecutter.use_cuda %}
+[project.optional-dependencies]
+cuda11x = ["cupy-cuda11x>=12.3.0,<13"]
+cuda12x = ["cupy-cuda12x>=12.3.0,<13"]
+{% endif %}
+
+
+# description = ["A testbed for Python and Rust"]
+# license = "license.md"
+
+
+######################################################
+### Maturin — manages the Rust extension
+
+# Builds the
+
+[tool.maturin]
+python-source = "{{ cookiecutter.bindings_project_dir  }}/src"
+profile = "release"
+manifest-path = "{{ cookiecutter.bindings_project_dir  }}/Cargo.toml"
+
+[build-system]
+requires = ["maturin>=1.4.0"]
+build-backend = "maturin"
+
+
+######################################################
+### Poetry — only used for virtual environments
+
+[tool.poetry]
+name = "{{ cookiecutter.python_project_name }}"
+version = "0.0.2"
+description = "{{ cookiecutter.description }}"
+authors = ["{{ cookiecutter.author }} <{{ cookiecutter.email }}>"]
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+# Pin package dependencies for reproducible environments
+[tool.poetry.group.main.dependencies]
+numpy = "^1.26.2"
+SciPy = "^1.11.4"
+scikit-learn = "^1.3.2"
+
+
+{% if cookiecutter.use_cuda %}
+[tool.poetry.group.cuda12x]
+optional = true
+
+[tool.poetry.group.cuda12x.dependencies]
+cupy-cuda12x = "^12.3.0"
+{% endif %}
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.9"
+mypy = "^1.8.0"
+pytest = "^7.4.3"
+maturin = "^1.4.0"
+
+# Optional: Build documentation
+pytest-coverage = "^0.0"
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+pydata-sphinx-theme = "^0.14.4"
+Sphinx = "^7.2.6"
+myst-parser = "^2.0.0"
+sphinxcontrib-svgbob = "^0.2.1"
+
+# Optional: Jupyter for experiments
+[tool.poetry.group.jupyter]
+optional = true
+
+[tool.poetry.group.jupyter.dependencies]
+matplotlib = "^3.8.2"
+jupyterlab = "^4.0.9"
+jupyter-black = "^0.3.4"
+ipympl = "^0.9.3"
+ipykernel = "^6.27.1"
+seaborn = "^0.13.0"
+
+[tool.poetry.group.lsp]
+optional = true
+
+[tool.poetry.group.lsp.dependencies]
+python-lsp-server = "^1.9.0"
+python-lsp-ruff = "^2.0.0"
+python-lsp-black = "^2.0.0"
+pylsp-mypy = "^0.6.8"
+
+
+######################################################
+### Tools
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+warn_unused_ignores = false
+namespace_packages = true
+mypy_path = "python"        #src"
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    'cupy.*',
+    'scipy.*',
+    "sklearn.*",
+    "python_rust_testbed_bindings",
+    "matplotlib.*",
+]
+ignore_missing_imports = true
+
+
+[tool.black]
+line-length = 120
+target_version = ["py312"]
+
+[tool.ruff]
+line-length = 120
+
+
+######################################################
+### Tasks (Poe the Poet)
+### `poetry self add 'poethepoet[poetry_plugin]'`
+
+[tool.poe]
+poetry_command = ""
+
+[tool.poe.tasks]
+lint = "ruff check --fix python"
+typing = "mypy -m python_rust_testbed"
+fmt = "ruff format python/"
+test = "pytest --cov=python_rust_testbed"
+all = ["fmt", "lint", "typing", "test"]
+
+[tool.poe.tasks.lab]
+shell = """
+jupyter lab
+"""
+help = "Start Jupyter Lab [Poe Task]"
+
+{% if cookiecutter.use_cuda %}
+[tool.poe.tasks.nvidia]
+shell = """
+watch -n 1 nvidia-smi
+"""
+help = "Open nvidia moniotor (refreshes every 1sec) [Poe Task]"
+{% endif %}
+
+[tool.poe.tasks.docs]
+shell = """
+(cd {{ cookiecutter.python_project_dir }}/docs && sphinx-apidoc ../src/{{ cookiecutter.python_project_slug }} -o api && make html)
+"""
+help = "Build docs [Poe Task]"
+
+{% if cookiecutter.use_cuda %}
+[tool.poe.tasks.verify]
+cmd = "python -c \"import cupy as cp; print(cp.cuda.get_cuda_path()); x_gpu = cp.array([1, 2, 3])\""
+help = "Verify that cupy works [Poe Task]"
+{% endif %}
+
+[tool.poe.tasks.install-kernel]
+cmd = "python -m ipykernel install --user --name {{ cookiecutter.python_project_slug }} --display-name \"{{ cookiecutter.python_project_name }} (python3)\""
+help = "Install the environment as a kernel [Poe Task]"
+
+[tool.poe.tasks.uninstall-kernel]
+shell = """
+    jupyter kernelspec uninstall {{ cookiecutter.python_project_slug }} -y
+    jupyter kernelspec list
+"""
+help = "Uninstall the kernel associated with this environment [Poe Task]"
+
+[tool.poe.tasks.maturin]
+shell = """maturin develop --release"""
+help = "Build Python extension [Poe Task]"
+
+{% if cookiecutter.use_helix %}
+[tool.poe.tasks.zellij]
+cmd = """zellij --layout .helix/layout.kd"""
+help = "Start new zellij/helix session with the recommended layout"
+{% endif %}

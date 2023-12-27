@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "usernamehw.errorlens",
+        "njpwerner.autodocstring",
+        "DavidAnson.vscode-markdownlint",
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "ms-python.mypy-type-checker",
+        "executablebookproject.myst-highlight",
+        "charliermarsh.ruff",
+        "ms-python.vscode-pylance"
+    ]
+}

@@ -1,0 +1,42 @@
+// Layout for working with cupy_som efficiently
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+	tab name="Helix" focus=true {
+		
+		pane split_direction="vertical" {
+			pane command="hx" size="70%" {
+				args "pyproject.toml"
+			}	
+			// pane command="hx" borderless=true size="70%"	
+			pane split_direction="horizontal"  {
+				pane command="poetry" start_suspended=true {
+					args "all"	
+				}
+				pane
+				pane size=27 borderless=true command="watch" {
+					args "-n 1" "nvidia-smi"
+				} 
+			}
+		}
+	    // pane size=1 borderless=true {
+	    //     plugin location="zellij:compact-bar"
+	    // }
+	}
+	tab name="Jupyter" {
+		pane split_direction="vertical" {
+			pane command="poetry" start_suspended=true {
+				args "lab"
+			}
+			pane
+		}
+	}
+}

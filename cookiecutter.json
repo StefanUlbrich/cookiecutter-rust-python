@@ -1,0 +1,28 @@
+{
+    "project_name": "python-rust-project",
+
+    "python_project_name": "{{ cookiecutter.project_name }}",
+    "python_project_slug": "{{ cookiecutter.python_project_name.lower().replace('-', '_').replace(' ', '_') }}",
+    "python_project_dir": "{{ cookiecutter.python_project_name }}",
+    
+    "rust_project_name": "{{ cookiecutter.project_name }}-rs",
+    "rust_project_slug": "{{ cookiecutter.rust_project_name.lower().replace('-', '_').replace(' ', '_') }}",
+    "rust_project_dir": "{{ cookiecutter.rust_project_name }}",
+
+    "bindings_project_name": "{{ cookiecutter.project_name }}-bindings",
+    "bindings_project_slug": "{{ cookiecutter.bindings_project_name.lower().replace('-', '_').replace(' ', '_') }}",
+    "bindings_project_dir": "{{ cookiecutter.bindings_project_name }}",
+
+    "author": "King Arthur",
+    "email": "kind.arthur@python.org",
+
+    "use_vscode": true,
+    "use_helix": false,
+    "use_cuda": false,
+
+    "include_sample_code": true,
+    
+    "description": "A Scientific package",
+    "homepage": "https://example.com",
+    "license": ["MIT", "BSD-3", "GNU GPL v3.0", "Apache Software License 2.0"]
+}
