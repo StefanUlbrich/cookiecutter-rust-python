@@ -1,4 +1,6 @@
-# cat post_gen_project.py
+# ruff: noqa
+# type: ignore
+# https://github.com/cookiecutter/cookiecutter/issues/723#issuecomment-350561930
 import os
 import shutil
 

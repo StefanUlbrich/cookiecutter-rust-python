@@ -97,9 +97,9 @@ poetry nvidia # starts the nvidia  monitor
 ```sh
 # optional. when using pyenv, select your version
 pyenv shell 3.12 && poetry env use python
-poetry install -E cuda12x # with cuda installed
-poetry install -E cuda12x --with jupyter # when you want jupyter
-poetry install -E cuda12x --with jupyter,doc # when you want to build the documentation
+poetry install --no-root -E cuda12x # with cuda installed
+poetry install --no-root -E cuda12x --with jupyter # when you want jupyter
+poetry install --no-root -E cuda12x --with jupyter,doc # when you want to build the documentation
 ```
 
 or add it to another project as a dependency (assuming you have your github configured
