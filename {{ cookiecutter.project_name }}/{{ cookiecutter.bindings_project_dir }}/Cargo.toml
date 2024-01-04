@@ -1,0 +1,19 @@
+[package]
+name = "{{ cookiecutter.bindings_project_slug }}"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "{{ cookiecutter.python_project_slug }}"
+# path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+
+ndarray = { workspace = true, features = ["rayon", "approx"] }
+pyo3 = { version = "0.20.0", features = ["extension-module"] }
+numpy = "0.20.0"
+{{ cookiecutter.rust_project_slug }} = { path = "../{{ cookiecutter.rust_project_dir }}" }
+
+[dev-dependencies]
+ndarray-npy = { workspace = true }
